@@ -18,8 +18,9 @@ Import-Package: *;resolution:=optional
 Export-Package: org.hornetq.api.core.client,\
   org.hornetq.api.core.client.loadbalance,\
   org.hornetq.core.remoting.impl.invm,\
+  com.humanet.messaging.hornetq,\
   com.humanet.messaging.hornetq.events,\
-  com.humanet.messaging.hornetq.exceptions,\
+  com.humanet.messaging.hornetq.exceptions
 
 
    
