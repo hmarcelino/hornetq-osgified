@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
                       http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
     <osgix:cm-properties id="messagingConfs" persistent-id="com.humanet.messaging.hornetq">
         <prop key="hornetq.configuration.file">../dist/src/main/etc/conf/hornetq-configuration.xml</prop>
     </osgix:cm-properties>
+
+    <osgi:service ref="messagingService" interface="com.humanet.messaging.hornetq.MessagingService"/>
 
 </beans>
