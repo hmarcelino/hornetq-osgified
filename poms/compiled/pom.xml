@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>com.humanet.messaging.build</groupId>
+        <artifactId>shared-plugin-settings</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>compiled-bundle-settings</artifactId>
+
+    <name>FullTextSearch - bundle instructions</name>
+
+    <packaging>pom</packaging>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                    <include>plugin.properties</include>
+                    <include>icons/**</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <!--
+                         | assume public classes are in the top package, and private classes are under ".internal"
+                        -->
+                        <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"
+                        </Export-Package>
+                        <Private-Package>${bundle.namespace}.internal.*</Private-Package>
+                        <!--
+                         | each module can override these defaults in their osgi.bnd file
+                        -->
+                        <_include>-osgi.bnd</_include>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>false</skipTests>
+                    <useFile>false</useFile>
+                    <forkMode>once</forkMode>
+                    <childDelegation>false</childDelegation>
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <printSummary>true</printSummary>
+                    <reportFormat>brief</reportFormat>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
