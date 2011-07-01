@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <!--suppress SpringModelInspection -->
+    <context:property-placeholder properties-ref="messagingConfs"/>
+
+    <!-- MBean server -->
+    <bean id="mBeanServer" class="java.lang.management.ManagementFactory" factory-method="getPlatformMBeanServer"/>
+
+    <!-- The core configuration -->
+    <bean id="configuration" class="com.humanet.messaging.hornetq.internal.HornetQFileConfigurator">
+        <constructor-arg value="${hornetq.configuration.file}"/>
+    </bean>
+
+    <!-- The security manager -->
+    <bean id="hornetQSecurityManager" class="org.hornetq.spi.core.security.HornetQSecurityManagerImpl"
+          init-method="start"
+          destroy-method="stop"/>
+
+    <!-- The core server -->
+    <bean id="hornetQServer" class="org.hornetq.core.server.impl.HornetQServerImpl">
+        <constructor-arg index="0" ref="configuration"/>
+        <constructor-arg index="1" ref="mBeanServer"/>
+        <constructor-arg index="2" ref="hornetQSecurityManager"/>
+    </bean>
+
+    <!-- JMS Server -->
+    <bean id="jmsServerManager" class="org.hornetq.jms.server.impl.JMSServerManagerImpl"
+          init-method="start"
+          destroy-method="stop">
+        <constructor-arg ref="hornetQServer"/>
+    </bean>
+
+    <!-- The JMS server control -->
+    <bean id="jmsServerControl" class="org.hornetq.jms.management.impl.JMSServerControlImpl">
+        <constructor-arg ref="jmsServerManager"/>
+    </bean>
+
+</beans>

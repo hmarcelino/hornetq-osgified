@@ -1,0 +1,25 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+Embed-Dependency: hornetq-bootstrap;groupId=org.hornetq;inline=false, \
+  hornetq-core;groupId=org.hornetq;inline=false, \
+  hornetq-core-client;groupId=org.hornetq;inline=false, \
+  hornetq-jms-client;groupId=org.hornetq;inline=false, \
+  hornetq-jms;groupId=org.hornetq;inline=false, \
+  hornetq-logging;groupId=org.hornetq;inline=false, \
+  netty;groupId=org.jboss.netty;inline=false, \
+  jms;groupId=javax.jms;inline=false
+
+Import-Package: *;resolution:=optional
+
+#We need to export these packages because hornetq is not fully osgi compliant
+#see (https://jira.jboss.org/browse/HORNETQ-145)
+Export-Package: org.hornetq.api.core.client,\
+  org.hornetq.api.core.client.loadbalance,\
+  org.hornetq.core.remoting.impl.invm,\
+  com.humanet.messaging.hornetq.events,\
+  com.humanet.messaging.hornetq.exceptions,\
+
+
+   
