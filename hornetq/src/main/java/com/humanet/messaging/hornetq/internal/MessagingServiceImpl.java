@@ -13,17 +13,18 @@ import javax.jms.JMSException;
  */
 public final class MessagingServiceImpl implements MessagingService {
 
+    private String location;
     private MessagingManager mmanager;
 
-    public MessagingServiceImpl(MessagingManager manager) {
+    public MessagingServiceImpl(MessagingManager manager, String location) {
         this.mmanager = manager;
+        this.location = location;
     }
 
     @Override
     public String getLocation() {
-        return mmanager.getServerLocation();
+        return location;
     }
-
 
     @Override
     public MessageSender createMessageSenderForTopic(String topicName) throws MessagingException {
@@ -103,5 +104,5 @@ public final class MessagingServiceImpl implements MessagingService {
         }
 
     }
-}//MessagingServiceImpl
+}
 

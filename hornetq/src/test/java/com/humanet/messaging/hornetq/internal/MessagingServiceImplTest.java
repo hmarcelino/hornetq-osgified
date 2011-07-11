@@ -23,7 +23,7 @@ public class MessagingServiceImplTest {
     @BeforeMethod
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        service = new MessagingServiceImpl(hqManager);
+        service = new MessagingServiceImpl(hqManager, "server1");
     }
 
     @Test

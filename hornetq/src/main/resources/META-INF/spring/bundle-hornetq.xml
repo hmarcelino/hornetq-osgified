@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="server" class="com.humanet.messaging.hornetq.internal.HornetQServer"
+          init-method="start"
+          destroy-method="stop">
+        <property name="configResourcePath" value="${hornetq.server.configuration.file}"/>
+        <property name="jmsConfigResourcePath" value="${hornetq.client.configuration.file}"/>
+    </bean>
+
+    <bean id="serverId" factory-bean="server" factory-method="getNodeId"/>
+
+    <bean id="serverManager" factory-bean="server" factory-method="getServerManager"/>
+
+    <bean id="serverControl" class="org.hornetq.jms.management.impl.JMSServerControlImpl">
+        <constructor-arg ref="serverManager"/>
+    </bean>
+
+    <!-- ConnectionFactory is a bean created by HornetQ during the start of the server -->
+    <!--- <bean id="connection" factory-bean="ConnectionFactory" factory-method="createConnection"/> -->
+
+</beans>

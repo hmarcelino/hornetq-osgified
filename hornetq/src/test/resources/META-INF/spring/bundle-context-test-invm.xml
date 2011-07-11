@@ -9,7 +9,8 @@
     <bean id="messagingConfs" class="java.util.Properties">
         <constructor-arg index="0">
             <props>
-                <prop key="hornetq.configuration.file">src/test/resources/META-INF/hornetq-configuration-invm.xml</prop>
+                <prop key="hornetq.server.configuration.file">src/test/resources/META-INF/invm/hornetq-configuarion.xml</prop>
+                <prop key="hornetq.client.configuration.file">src/test/resources/META-INF/invm/hornetq-jms.xml</prop>
             </props>
         </constructor-arg>
     </bean>

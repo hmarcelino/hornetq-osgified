@@ -1,17 +1,10 @@
 package com.humanet.messaging.hornetq.internal;
 
-import com.humanet.messaging.hornetq.DestinationType;
+import com.humanet.messaging.hornetq.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.jms.HornetQJMSClient;
-import org.hornetq.api.jms.JMSFactoryType;
 import org.hornetq.api.jms.management.JMSServerControl;
-import com.humanet.messaging.hornetq.*;
-import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.hornetq.core.server.HornetQServer;
-import org.hornetq.jms.client.HornetQConnectionFactory;
-import org.hornetq.jms.server.JMSServerManager;
 
 import javax.jms.*;
 import java.util.Arrays;
@@ -23,51 +16,31 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
 
     private static final Log log = LogFactory.getLog(HornetQManagerImpl.class);
 
-    private JMSServerManager serverManager;
     private JMSServerControl control;
     private Connection connection;
-    private Map<Integer, MessageClient> sessions;
+
+    private Map<Integer, MessageClient> sessions = new HashMap<Integer, MessageClient>();
 
 
-    public HornetQManagerImpl(JMSServerControl control, JMSServerManager serverManager) throws JMSException {
-
-        this.serverManager = serverManager;
+    public HornetQManagerImpl(JMSServerControl control, Connection connection) throws JMSException {
         this.control = control;
+        this.connection = connection;
 
-        //We make an InVM connection to our local server,
-        //who then connects to the other vm's servers (via netty, etc)
-        HornetQConnectionFactory connectionFactory = HornetQJMSClient.createConnectionFactoryWithoutHA(
-                JMSFactoryType.CF,
-                new TransportConfiguration(InVMConnectorFactory.class.getName())
-        );
-
-        //turn off client-side message buffer
-        connectionFactory.setConsumerWindowSize(0);
-
-        sessions = new HashMap<Integer, MessageClient>();
-        connection = connectionFactory.createConnection();
-        connection.setExceptionListener(this);
+        /*
+        if (connection != null) {
+            connection.setExceptionListener(this);
+        } else {
+            throw new JMSException("Connection is null. This is not acceptable!", "jms.error.connection-is-null");
+        }
+        */
     }
-
 
     @Override
     public void onException(JMSException e) {
         log.error(e);
     }
 
-
-    public String getServerLocation() {
-        HornetQServer server = serverManager.getHornetQServer();
-        return server.getNodeID().toString();
-    }
-
-
-    public void startUp() throws JMSException {
-        connection.start();
-    }
-
-    public boolean createDestination(DestinationType destinationType, String destinationName)
-            throws Exception {
+    public boolean createDestination(DestinationType destinationType, String destinationName) throws Exception {
 
         boolean success;
 
@@ -104,7 +77,6 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
                 );
         }
     }
-
 
     public void registerMessageReceiver(DestinationType destinationType,
                                         String destinationName,
@@ -170,7 +142,7 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
                 sender.getType(), sender.getDestinationName()
         ));
         sender.setSession(session);
-        ((JmsMessageSender)sender).setProducer(producer);
+        ((JmsMessageSender) sender).setProducer(producer);
     }
 
 
@@ -188,23 +160,21 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
 
 
     private void closeClientSession(MessageClient client) throws JMSException {
-            client.invalidateSession();
-            sessions.remove(client.hashCode());
-    }//client
+        client.invalidateSession();
+        sessions.remove(client.hashCode());
+    }
 
 
-    public void shutdown(){
+    public void destroy() {
         try {
             //close all sessions
             for (MessageClient client : sessions.values()) {
                 closeClientSession(client);
             }
-            //close connection
-            connection.close();
             sessions.clear();
 
         } catch (JMSException e) {
             log.error(e.getMessage());
         }
     }
-}//HornetQManagerImpl
+}

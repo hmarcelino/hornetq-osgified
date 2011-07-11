@@ -3,7 +3,14 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="embeddedJms" class="org.hornetq.integration.spring.SpringJmsBootstrap"
-          init-method="start" destroy-method="stop"/>
+    <bean id="messagingService" class="com.humanet.messaging.hornetq.internal.MessagingServiceImpl">
+        <constructor-arg ref="hornetQManager"/>
+        <constructor-arg ref="serverId"/>
+    </bean>
+
+    <bean id="hornetQManager" class="com.humanet.messaging.hornetq.internal.HornetQManagerImpl" destroy-method="destroy">
+        <constructor-arg ref="serverControl"/>
+        <!--<constructor-arg ref="connection"/>-->
+    </bean>
 
 </beans>

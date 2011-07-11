@@ -42,7 +42,7 @@
                 <configuration>
                     <framework>equinox</framework>
                     <provision>
-                        <param>--bootDelegation=javax.xml.*,sun.*</param>
+                        <param>--bootDelegation=javax.*,sun.*</param>
                         <param>
                             <![CDATA[--vmOptions=-Xms256m -Xmx1G -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000]]>
                         </param>

@@ -55,8 +55,4 @@ public class HornetQManagerQueueIntegrationTest extends MessagingTestCase {
         assertEquals("Ola messageReceiver", messageReceiver.getTextMessage());
     }
 
-    @AfterMethod
-    public void closeClientConnections() throws Exception {
-//        mmanager.shutdown();
-    }
 }
