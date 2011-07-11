@@ -8,9 +8,10 @@
         <constructor-arg ref="serverId"/>
     </bean>
 
-    <bean id="hornetQManager" class="com.humanet.messaging.hornetq.internal.HornetQManagerImpl" destroy-method="destroy">
+    <bean id="hornetQManager" class="com.humanet.messaging.hornetq.internal.HornetQManagerImpl"
+          destroy-method="destroy">
         <constructor-arg ref="serverControl"/>
-        <!--<constructor-arg ref="connection"/>-->
+        <constructor-arg ref="connection"/>
     </bean>
 
 </beans>

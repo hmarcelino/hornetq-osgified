@@ -21,7 +21,7 @@ public class MessagingSpringContextTestHelper {
     public void start() {
         testApplicationContext = new FileSystemXmlApplicationContext(
                 "file:src/main/resources/META-INF/spring/bundle-hornetq.xml",
-                "file:src/main/resources/META-INF/spring/bundle-context.xml",
+//                "file:src/main/resources/META-INF/spring/bundle-context.xml",
                 "file:src/test/resources/META-INF/spring/bundle-context-test-" + suffixSpringConfig + ".xml"
         );
 

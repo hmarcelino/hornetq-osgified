@@ -21,18 +21,15 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
 
     private Map<Integer, MessageClient> sessions = new HashMap<Integer, MessageClient>();
 
-
     public HornetQManagerImpl(JMSServerControl control, Connection connection) throws JMSException {
         this.control = control;
         this.connection = connection;
 
-        /*
         if (connection != null) {
             connection.setExceptionListener(this);
         } else {
             throw new JMSException("Connection is null. This is not acceptable!", "jms.error.connection-is-null");
         }
-        */
     }
 
     @Override
