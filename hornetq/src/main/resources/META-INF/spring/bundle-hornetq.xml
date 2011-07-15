@@ -7,11 +7,10 @@
 
     <context:property-placeholder properties-ref="messagingConfs"/>
 
-    <bean id="server" class="com.humanet.messaging.hornetq.internal.HornetQServer"
+    <bean id="server" class="com.humanet.messaging.hornetq.internal.hornetq.HornetQServer"
           init-method="start"
           destroy-method="stop">
         <property name="configResourcePath" value="${hornetq.server.configuration.file}"/>
-        <property name="jmsConfigResourcePath" value="${hornetq.client.configuration.file}"/>
     </bean>
 
     <bean id="serverId" factory-bean="server" factory-method="getNodeId"/>
@@ -21,8 +20,5 @@
     <bean id="serverControl" class="org.hornetq.jms.management.impl.JMSServerControlImpl">
         <constructor-arg ref="serverManager"/>
     </bean>
-
-    <!-- ConnectionFactory is a bean created by HornetQ during the start of the server -->
-    <bean id="connection" factory-bean="ConnectionFactory" factory-method="createConnection"/>
 
 </beans>

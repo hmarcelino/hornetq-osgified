@@ -7,7 +7,6 @@
         <constructor-arg index="0">
             <props>
                 <prop key="hornetq.server.configuration.file">file:src/test/resources/META-INF/netty/hornetq-configuration.xml</prop>
-                <prop key="hornetq.client.configuration.file">file:src/test/resources/META-INF/netty/hornetq-jms.xml</prop>
             </props>
         </constructor-arg>
     </bean>

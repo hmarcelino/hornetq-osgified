@@ -1,6 +1,7 @@
 package com.humanet.messaging.hornetq.internal;
 
 import com.humanet.messaging.hornetq.DestinationType;
+import com.humanet.messaging.hornetq.internal.hornetq.HornetQManagerImpl;
 import org.apache.commons.logging.LogFactory;
 import org.hornetq.api.jms.management.JMSServerControl;
 import org.mockito.Mock;

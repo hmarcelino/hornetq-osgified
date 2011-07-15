@@ -1,6 +1,9 @@
-package com.humanet.messaging.hornetq.internal;
+package com.humanet.messaging.hornetq.internal.hornetq;
 
 import com.humanet.messaging.hornetq.*;
+import com.humanet.messaging.hornetq.internal.JmsMessageConsumerAdapter;
+import com.humanet.messaging.hornetq.internal.JmsMessageSender;
+import com.humanet.messaging.hornetq.internal.MessagingManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hornetq.api.jms.HornetQJMSClient;
@@ -17,24 +20,28 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
     private static final Log log = LogFactory.getLog(HornetQManagerImpl.class);
 
     private JMSServerControl control;
+
+    private ConnectionFactory connectionFactory;
     private Connection connection;
 
     private Map<Integer, MessageClient> sessions = new HashMap<Integer, MessageClient>();
 
-    public HornetQManagerImpl(JMSServerControl control, Connection connection) throws JMSException {
+    public HornetQManagerImpl(JMSServerControl control, ConnectionFactory connectionFactory) {
         this.control = control;
-        this.connection = connection;
-
-        if (connection != null) {
-            connection.setExceptionListener(this);
-        } else {
-            throw new JMSException("Connection is null. This is not acceptable!", "jms.error.connection-is-null");
-        }
+        this.connectionFactory = connectionFactory;
     }
 
     @Override
     public void onException(JMSException e) {
         log.error(e);
+    }
+
+    private Connection getConnection() throws JMSException {
+        if (connection != null) return connection;
+
+        connection = connectionFactory.createConnection();
+        connection.setExceptionListener(this);
+        return connection;
     }
 
     public boolean createDestination(DestinationType destinationType, String destinationName) throws Exception {
@@ -79,7 +86,7 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
                                         String destinationName,
                                         MessageReceiver messageReceiver) throws JMSException {
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer consumer = session.createConsumer(getDestination(
                 destinationType, destinationName
         ));
@@ -98,7 +105,7 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
     public MessageSender createMessageSender(DestinationType type, String destinationName)
             throws JMSException {
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageProducer producer = session.createProducer(getDestination(type, destinationName));
 
         MessageSender sender = new JmsMessageSender(session, producer,
@@ -134,7 +141,7 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
         //close and invalidate current session
         closeClientSession(sender);
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageProducer producer = session.createProducer(getDestination(
                 sender.getType(), sender.getDestinationName()
         ));
@@ -148,17 +155,11 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
         //close and invalidate current session
         closeClientSession(adapter);
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer consumer = session.createConsumer(getDestination(adapter.getType(),
                 adapter.getDestinationName()));
         adapter.setSession(session);
         adapter.setConsumer(consumer);
-    }
-
-
-    private void closeClientSession(MessageClient client) throws JMSException {
-        client.invalidateSession();
-        sessions.remove(client.hashCode());
     }
 
 
@@ -173,5 +174,11 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
         } catch (JMSException e) {
             log.error(e.getMessage());
         }
+    }
+
+
+    private void closeClientSession(MessageClient client) throws JMSException {
+        client.invalidateSession();
+        sessions.remove(client.hashCode());
     }
 }
