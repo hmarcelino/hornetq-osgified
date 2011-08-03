@@ -3,16 +3,18 @@ package com.humanet.messaging.hornetq.internal.hornetq;
 import com.humanet.messaging.hornetq.DestinationType;
 import com.humanet.messaging.hornetq.MessageReceiver;
 import com.humanet.messaging.hornetq.MessageSender;
-import com.humanet.messaging.hornetq.MessagingDestination;
+import com.humanet.messaging.hornetq.internal.ConnectionFactoryProvider;
 import com.humanet.messaging.hornetq.internal.JmsMessageConsumerAdapter;
 import com.humanet.messaging.hornetq.internal.JmsMessageSender;
 import com.humanet.messaging.hornetq.internal.MessagingManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.jms.HornetQJMSClient;
 import org.hornetq.api.jms.management.JMSServerControl;
 
 import javax.jms.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,24 +23,28 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
     private static final Log log = LogFactory.getLog(HornetQManagerImpl.class);
 
     private JMSServerControl control;
-
-    private ConnectionFactory connectionFactory;
+    private ConnectionFactoryProvider connectionFactoryProvider;
 
     private Connection connection;
     private Session session;
+    private List<JmsMessageConsumerAdapter> consumerAdapters = new ArrayList<JmsMessageConsumerAdapter>();
 
-    public HornetQManagerImpl(JMSServerControl control, ConnectionFactory connectionFactory) {
+    public HornetQManagerImpl(JMSServerControl control, ConnectionFactoryProvider connectionFactoryProvider) {
         this.control = control;
-        this.connectionFactory = connectionFactory;
+        this.connectionFactoryProvider = connectionFactoryProvider;
     }
 
-    public void init() throws JMSException {
+    public void init() throws JMSException, HornetQException {
         createSession(createConnection());
     }
 
-    private Connection createConnection() throws JMSException {
+    private Connection createConnection() throws JMSException, HornetQException {
+        ConnectionFactory connectionFactory = connectionFactoryProvider.getConnectionFactory("inVmConnectionFactory");
+
         connection = connectionFactory.createConnection();
         connection.setExceptionListener(this);
+        connection.start();
+
         return connection;
     }
 
@@ -116,12 +122,8 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
                 destinationType, destinationName
         ));
 
-        new JmsMessageConsumerAdapter(
-                session,
-                consumer,
-                messageReceiver,
-                new MessagingDestination(destinationType, destinationName),
-                this
+        consumerAdapters.add(
+                new JmsMessageConsumerAdapter(consumer, messageReceiver)
         );
     }
 
@@ -129,13 +131,16 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
             throws JMSException {
 
         MessageProducer producer = session.createProducer(getDestination(type, destinationName));
-        return new JmsMessageSender(session, producer, new MessagingDestination(type, destinationName), this);
+        return new JmsMessageSender(session, producer);
 
     }
 
     public void destroy() {
         try {
-            session.close();
+            for (JmsMessageConsumerAdapter consumerAdapter : consumerAdapters) {
+                consumerAdapter.stop();
+            }
+
             connection.stop();
 
         } catch (JMSException e) {

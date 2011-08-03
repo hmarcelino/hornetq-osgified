@@ -27,7 +27,7 @@ public class HornetQManagerTest {
     private JMSServerControl control;
 
     @Mock
-    private ConnectionFactory connectionFactory;
+    private ConnectionFactoryProvider connectionFactoryProvider;
 
     @BeforeClass
     protected void turnOf_logging() {
@@ -42,7 +42,7 @@ public class HornetQManagerTest {
     @BeforeMethod
     protected void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        messagingManager = new HornetQManagerImpl(control, connectionFactory);
+        messagingManager = new HornetQManagerImpl(control, connectionFactoryProvider);
     }
 
     @Test(expectedExceptions = {Exception.class})

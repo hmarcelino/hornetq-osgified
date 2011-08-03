@@ -7,16 +7,16 @@
 
     <context:property-placeholder properties-ref="messagingConfs"/>
 
-    <bean id="serverConfigurationParser"
-          class="com.humanet.messaging.hornetq.internal.hornetq.ServerConfigurationParser"
+    <bean id="serverConfigurationLoader"
+          class="com.humanet.messaging.hornetq.internal.hornetq.ServerConfigurationLoader"
           init-method="init">
         <constructor-arg index="0" value="${hornetq.server.configuration}"/>
     </bean>
 
-    <bean id="serverConfiguration" factory-bean="serverConfigurationParser" factory-method="getConfiguration"/>
+    <bean id="serverConfiguration" factory-bean="serverConfigurationLoader" factory-method="getConfiguration"/>
 
-    <bean id="hornetQConnectionsConfiguration"
-          class="com.humanet.messaging.hornetq.internal.hornetq.ConnectionsConfigurationParser"
+    <bean id="connectionsConfigurationLoader"
+          class="com.humanet.messaging.hornetq.internal.hornetq.ConnectionsConfigurationLoader"
           init-method="init">
         <constructor-arg index="0" value="${hornetq.jms.configuration}"/>
         <constructor-arg index="1" ref="serverConfiguration"/>
@@ -26,7 +26,7 @@
           init-method="start"
           destroy-method="stop">
         <property name="configuration">
-            <bean factory-bean="serverConfigurationParser" factory-method="getConfiguration"/>
+            <bean factory-bean="serverConfigurationLoader" factory-method="getConfiguration"/>
         </property>
     </bean>
 

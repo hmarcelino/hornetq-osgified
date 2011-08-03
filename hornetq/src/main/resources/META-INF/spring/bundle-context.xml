@@ -11,9 +11,7 @@
     <bean id="messagingManager" class="com.humanet.messaging.hornetq.internal.hornetq.HornetQManagerImpl"
           init-method="init" destroy-method="destroy">
         <constructor-arg ref="serverControl"/>
-        <constructor-arg>
-            <null/>
-        </constructor-arg>
+        <constructor-arg></constructor-arg>
     </bean>
 
 </beans>

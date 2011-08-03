@@ -1,20 +1,25 @@
 package com.humanet.messaging.hornetq.internal;
 
-import com.humanet.messaging.hornetq.AbstractMessagingServiceClient;
 import com.humanet.messaging.hornetq.MessageReceiver;
-import com.humanet.messaging.hornetq.MessagingDestination;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.core.logging.Logger;
 
-import javax.jms.*;
-import javax.jms.IllegalStateException;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
 
-public final class JmsMessageConsumerAdapter extends AbstractMessagingServiceClient {
+public final class JmsMessageConsumerAdapter {
 
     private static final Logger log = Logger.getLogger(JmsMessageConsumerAdapter.class);
 
-    private AdapterTask adapterTask;
-        
+    private AdapterTask task;
+
+    public JmsMessageConsumerAdapter(MessageConsumer consumer, MessageReceiver receiver) {
+        task = new AdapterTask(consumer, receiver);
+        task.start();
+    }
+
     private class AdapterTask extends Thread {
 
         private MessageConsumer consumer;
@@ -40,16 +45,8 @@ public final class JmsMessageConsumerAdapter extends AbstractMessagingServiceCli
 
                     } else {
                         log.warn("Received a null message: " + message);
-                        reconnectSession();
                     }
-                } catch (IllegalStateException e) {
-                    log.error(e.getMessage(), e);
-                    reconnectSession();
-                    //https://issues.jboss.org/browse/HORNETQ-173
-                    //acrescentei aqui este reconnect porque se encontrou
-                    //um caso em que estavamos presos em ciclo infinito
-                    //com a seguinte mensagem
-                    //javax.jms.IllegalStateException: Consumer is closed
+
                 } catch (JMSException e) {
                     if (e.getCause() instanceof HornetQException
                             && ((HornetQException) e.getCause()).getCode() == 102) {
@@ -64,25 +61,9 @@ public final class JmsMessageConsumerAdapter extends AbstractMessagingServiceCli
         }
     }
 
-    public JmsMessageConsumerAdapter(Session session, MessageConsumer consumer, MessageReceiver receiver,
-                                     MessagingDestination destination, MessagingManager manager) {
-
-        super(session, destination, manager);
-        this.adapterTask = new AdapterTask(consumer, receiver);
-        this.adapterTask.start();
-    }
-
-    public void setConsumer(MessageConsumer consumer) {
-        this.adapterTask.consumer = consumer;
-    }
-
-
-    private void reconnectSession() {
-        try {
-            getMessagingManager().reconnetSession(this);
-        } catch (JMSException e) {
-            log.error("messaging.error.error-receiving-a-message", e);
-        }
+    public void stop() {
+        log.info("Stopping consumer thread " + task.getName());
+        task.interrupt();
     }
 
 }

@@ -33,7 +33,7 @@ public class JmsMessageSenderTest {
     @BeforeClass
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        sender = new JmsMessageSender(session, producer, destination, mmanager);
+        sender = new JmsMessageSender(session, producer);
     }
 
     @Test(expectedExceptions = {MessagingException.class})

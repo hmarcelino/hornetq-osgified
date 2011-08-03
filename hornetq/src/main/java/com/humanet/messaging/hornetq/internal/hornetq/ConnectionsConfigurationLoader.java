@@ -1,32 +1,37 @@
 package com.humanet.messaging.hornetq.internal.hornetq;
 
+import com.humanet.messaging.hornetq.internal.ConnectionFactoryProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hornetq.api.core.DiscoveryGroupConfiguration;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.api.core.TransportConfiguration;
-import org.hornetq.api.jms.HornetQJMSClient;
 import org.hornetq.core.config.Configuration;
-import org.hornetq.jms.client.HornetQConnectionFactory;
+import org.hornetq.jms.client.HornetQJMSConnectionFactory;
 import org.hornetq.jms.server.config.ConnectionFactoryConfiguration;
 import org.hornetq.jms.server.config.JMSConfiguration;
 import org.hornetq.jms.server.impl.JMSServerConfigParserImpl;
 
+import javax.jms.ConnectionFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ConnectionsConfigurationParser {
+public class ConnectionsConfigurationLoader implements ConnectionFactoryProvider {
 
-    public final static Log log = LogFactory.getLog(ConnectionsConfigurationParser.class);
+    public final static Log log = LogFactory.getLog(ConnectionsConfigurationLoader.class);
 
     private Configuration serverConfiguration;
     public String jsmConfigFile;
 
     private JMSConfiguration jmsConfiguration;
 
-    public ConnectionsConfigurationParser(String jmsConfigFile, Configuration serverConfiguration) {
+    private Map<String, HornetQJMSConnectionFactory> hqCfMap = new HashMap<String, HornetQJMSConnectionFactory>();
+
+    public ConnectionsConfigurationLoader(String jmsConfigFile, Configuration serverConfiguration) {
         this.jsmConfigFile = jmsConfigFile;
         this.serverConfiguration = serverConfiguration;
     }
@@ -41,15 +46,14 @@ public class ConnectionsConfigurationParser {
         }
 
         for (ConnectionFactoryConfiguration cfConfig : jmsConfiguration.getConnectionFactoryConfigurations()) {
-            getHornetQConnectionFactory(cfConfig);
+            hqCfMap.put(cfConfig.getName(), getHornetQConnectionFactory(cfConfig));
         }
     }
 
-    private HornetQConnectionFactory getHornetQConnectionFactory(ConnectionFactoryConfiguration cfConfig)
+    private HornetQJMSConnectionFactory getHornetQConnectionFactory(ConnectionFactoryConfiguration cfConfig)
             throws HornetQException {
 
-
-        HornetQConnectionFactory cf;
+        HornetQJMSConnectionFactory cf;
         if (cfConfig.getDiscoveryGroupName() != null) {
             DiscoveryGroupConfiguration groupConfig = serverConfiguration.getDiscoveryGroupConfigurations()
                     .get(cfConfig.getDiscoveryGroupName());
@@ -60,11 +64,8 @@ public class ConnectionsConfigurationParser {
                         "Discovery Group '" + cfConfig.getDiscoveryGroupName() + "' doesn't exist on maing config");
             }
 
-            if (cfConfig.isHA()) {
-                cf = HornetQJMSClient.createConnectionFactoryWithHA(groupConfig, cfConfig.getFactoryType());
-            } else {
-                cf = HornetQJMSClient.createConnectionFactoryWithoutHA(groupConfig, cfConfig.getFactoryType());
-            }
+            cf = new HornetQJMSConnectionFactory(cfConfig.isHA(), groupConfig);
+
         } else {
             if (cfConfig.getConnectorNames() == null || cfConfig.getConnectorNames().size() == 0) {
                 throw new HornetQException(HornetQException.ILLEGAL_STATE,
@@ -83,11 +84,7 @@ public class ConnectionsConfigurationParser {
                 configs[count++] = connector;
             }
 
-            if (cfConfig.isHA()) {
-                cf = HornetQJMSClient.createConnectionFactoryWithHA(cfConfig.getFactoryType(), configs);
-            } else {
-                cf = HornetQJMSClient.createConnectionFactoryWithoutHA(cfConfig.getFactoryType(), configs);
-            }
+            cf = new HornetQJMSConnectionFactory(cfConfig.isHA(), configs);
         }
 
         cf.setName(cfConfig.getName());
@@ -123,4 +120,16 @@ public class ConnectionsConfigurationParser {
         return cf;
     }
 
+
+    @Override
+    public ConnectionFactory getConnectionFactory(String name) throws HornetQException {
+        if (!hqCfMap.containsKey(name)) {
+            throw new HornetQException(
+                    HornetQException.ILLEGAL_STATE,
+                    "Np connection factory found with name: " + name
+            );
+        }
+
+        return hqCfMap.get(name);
+    }
 }

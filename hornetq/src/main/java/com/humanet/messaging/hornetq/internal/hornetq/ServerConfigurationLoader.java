@@ -8,14 +8,14 @@ import org.hornetq.core.deployers.impl.FileConfigurationParser;
 import java.io.File;
 import java.io.FileInputStream;
 
-public class ServerConfigurationParser {
+public class ServerConfigurationLoader {
 
-    public final static Log log = LogFactory.getLog(ConnectionsConfigurationParser.class);
+    public final static Log log = LogFactory.getLog(ConnectionsConfigurationLoader.class);
 
     public String configFile;
     private Configuration serverConfiguration;
 
-    public ServerConfigurationParser(String configFile) {
+    public ServerConfigurationLoader(String configFile) {
         this.configFile = configFile;
     }
 
