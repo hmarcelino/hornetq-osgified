@@ -8,7 +8,8 @@
                       http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
     <osgix:cm-properties id="messagingConfs" persistent-id="com.humanet.messaging.hornetq">
-        <prop key="hornetq.server.configuration.file">file:../dist/src/main/etc/conf/hornetq/hornetq-configuration.xml</prop>
+        <prop key="hornetq.server.configuration">file:../dist/src/main/etc/conf/hornetq/hornetq-configuration.xml</prop>
+        <prop key="hornetq.jms.configuration">file:../dist/src/main/etc/conf/hornetq/hornetq-jms.xml</prop>
     </osgix:cm-properties>
 
     <osgi:service ref="messagingService" interface="com.humanet.messaging.hornetq.MessagingService"/>

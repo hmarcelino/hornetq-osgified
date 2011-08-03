@@ -16,9 +16,5 @@ public interface MessagingManager {
 
     public MessageSender createMessageSender(DestinationType type, String destinationName) throws JMSException;
 
-    public void reconnetSession(MessageSender sender) throws JMSException;
-
-    public void reconnetSession(JmsMessageConsumerAdapter consumer) throws JMSException;
-
     public void destroy();
 }
