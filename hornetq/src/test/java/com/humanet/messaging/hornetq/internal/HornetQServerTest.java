@@ -24,19 +24,19 @@ public class HornetQServerTest extends SilentTestCase {
                 "file:src/test/resources/META-INF/spring/bundle-context-test-netty.xml"
         );
 
-        JMSServerManager server = (JMSServerManager) applicationContext.getBean("jmsServerManager");
-        assertTrue(server.isStarted());
-        assertThat(server, IsListeningOnPort(5445));
+        JMSServerManager serverManager = (JMSServerManager) applicationContext.getBean("serverManager");
+        assertTrue(serverManager.isStarted());
+        assertThat(serverManager, IsListeningOnPort(5445));
 
-        server.stop();
+        serverManager.stop();
         applicationContext.destroy();
 
         Thread.sleep(2000);
 
-        assertFalse(server.isStarted());
+        assertFalse(serverManager.isStarted());
 
         //Wait to make sure the server is stoped
-        assertThat(server, not(IsListeningOnPort(5445)));
+        assertThat(serverManager, not(IsListeningOnPort(5445)));
     }
 
     private Matcher<JMSServerManager> IsListeningOnPort(final int port) {

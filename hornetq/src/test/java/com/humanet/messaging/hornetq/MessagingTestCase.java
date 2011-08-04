@@ -14,7 +14,7 @@ public class MessagingTestCase {
         //this class cannot extend SilentTestCase, because the AfterClass turns the logging back on
         new SilentTestCase().turn_Logging_Off();
 
-        serverContext = new MessagingSpringContextTestHelper("invm");
+        serverContext = new MessagingSpringContextTestHelper("server1");
         serverContext.start();
     }
 

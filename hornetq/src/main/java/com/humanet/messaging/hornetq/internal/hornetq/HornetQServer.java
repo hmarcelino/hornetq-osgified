@@ -14,8 +14,4 @@ public class HornetQServer extends SpringJmsBootstrap implements JmsServer {
         return serverManager;
     }
 
-    @Override
-    public void start() throws Exception {
-        super.start();
-    }
 }

@@ -27,7 +27,7 @@ public class HornetQClusterTest extends MessagingTestCase {
 
         publisher = messagingServiceServer1.createMessageSenderForTopic("clusteredTopic");
 
-        serverContext_2 = new MessagingSpringContextTestHelper("invm-2");
+        serverContext_2 = new MessagingSpringContextTestHelper("server2");
         serverContext_2.start();
 
         MessagingService messagingServiceServer2 = (MessagingService) serverContext_2.getSpringApplicationContext().getBean("messagingService");
