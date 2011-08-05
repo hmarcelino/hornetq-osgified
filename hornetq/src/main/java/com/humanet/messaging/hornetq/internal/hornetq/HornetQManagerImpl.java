@@ -3,6 +3,7 @@ package com.humanet.messaging.hornetq.internal.hornetq;
 import com.humanet.messaging.hornetq.DestinationType;
 import com.humanet.messaging.hornetq.MessageReceiver;
 import com.humanet.messaging.hornetq.MessageSender;
+import com.humanet.messaging.hornetq.exceptions.MessagingException;
 import com.humanet.messaging.hornetq.internal.ConnectionFactoryProvider;
 import com.humanet.messaging.hornetq.internal.JmsMessageConsumerAdapter;
 import com.humanet.messaging.hornetq.internal.JmsMessageSender;
@@ -27,7 +28,9 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
 
     private Connection connection;
     private Session session;
-    private List<JmsMessageConsumerAdapter> consumerAdapters = new ArrayList<JmsMessageConsumerAdapter>();
+
+    private List<JmsMessageSender> producers = new ArrayList<JmsMessageSender>();
+    private List<JmsMessageConsumerAdapter> consumers = new ArrayList<JmsMessageConsumerAdapter>();
 
     public HornetQManagerImpl(JMSServerControl control, ConnectionFactoryProvider connectionFactoryProvider) {
         this.control = control;
@@ -122,7 +125,7 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
                 destinationType, destinationName
         ));
 
-        consumerAdapters.add(
+        consumers.add(
                 new JmsMessageConsumerAdapter(consumer, messageReceiver)
         );
     }
@@ -137,13 +140,23 @@ public class HornetQManagerImpl implements MessagingManager, ExceptionListener {
 
     public void destroy() {
         try {
-            for (JmsMessageConsumerAdapter consumerAdapter : consumerAdapters) {
+            for (JmsMessageConsumerAdapter consumerAdapter : consumers) {
                 consumerAdapter.stop();
             }
 
+            for (JmsMessageSender producer : producers) {
+                producer.shutdown();
+            }
+
+            session.close();
+
             connection.stop();
+            connection.close();
 
         } catch (JMSException e) {
+            log.error(e.getMessage());
+
+        } catch (MessagingException e) {
             log.error(e.getMessage());
         }
     }

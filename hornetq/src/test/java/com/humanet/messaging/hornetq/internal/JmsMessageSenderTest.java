@@ -44,6 +44,5 @@ public class JmsMessageSenderTest {
     }
 
     class DummyMessage implements Serializable {
-
     }
 }

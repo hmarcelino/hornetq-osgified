@@ -10,7 +10,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import javax.jms.ConnectionFactory;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;

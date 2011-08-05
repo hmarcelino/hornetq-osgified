@@ -20,7 +20,6 @@ public class HornetQManagerTopicIntegrationTest extends MessagingTestCase {
         messagingManager = serverContext.getMessagingManager();
     }
 
-
     @Test
     public void createTopic() throws Exception {
         messagingManager.createDestination(DestinationType.Topic, "createTopic-topic");

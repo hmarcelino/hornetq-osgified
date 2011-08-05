@@ -20,6 +20,8 @@ public class MessagingTestCase {
 
     @AfterTest
     public void setLoggingToOriginalState() throws Exception {
+        serverContext.stop();
+
         new SilentTestCase().turn_Logging_Back_On();
     }
 

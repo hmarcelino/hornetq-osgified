@@ -26,4 +26,12 @@ public class JmsMessageSender<T extends Serializable> implements MessageSender<T
         }
     }
 
+    public void shutdown() throws MessagingException {
+        try {
+            producer.close();
+        } catch (JMSException e) {
+            throw new MessagingException(e.getErrorCode(), e);
+        }
+    }
+
 }

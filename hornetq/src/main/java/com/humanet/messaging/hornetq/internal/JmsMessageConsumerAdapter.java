@@ -1,6 +1,7 @@
 package com.humanet.messaging.hornetq.internal;
 
 import com.humanet.messaging.hornetq.MessageReceiver;
+import com.humanet.messaging.hornetq.exceptions.MessagingException;
 import org.hornetq.api.core.HornetQException;
 import org.hornetq.core.logging.Logger;
 
@@ -14,8 +15,11 @@ public final class JmsMessageConsumerAdapter {
     private static final Logger log = Logger.getLogger(JmsMessageConsumerAdapter.class);
 
     private AdapterTask task;
+    private MessageConsumer consumer;
 
     public JmsMessageConsumerAdapter(MessageConsumer consumer, MessageReceiver receiver) {
+        this.consumer = consumer;
+
         task = new AdapterTask(consumer, receiver);
         task.start();
     }
@@ -61,9 +65,15 @@ public final class JmsMessageConsumerAdapter {
         }
     }
 
-    public void stop() {
+    public void stop() throws MessagingException {
         log.info("Stopping consumer thread " + task.getName());
         task.interrupt();
+
+        try {
+            consumer.close();
+        } catch (JMSException e) {
+            throw new MessagingException(e.getMessage(), e);
+        }
     }
 
 }
