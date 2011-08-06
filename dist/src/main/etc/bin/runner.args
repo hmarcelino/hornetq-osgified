@@ -1,0 +1,13 @@
+--noConsole
+--log=NONE
+--vmOptions=-Dorg.osgi.service.http.port=7000 -Dbundles.configuration.location=/etc/messaging/conf -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000
+--platform=equinox
+--bootDelegation=javax.*,sun.*
+--repositories=file:../equinox 
+scan-bundle:file:../lib/org.eclipse.equinox.cm-1.0.0.v20080509-1800.jar
+scan-bundle:file:../lib/pax-confman-propsloader-0.2.2.jar
+scan-bundle:file:../lib/grizzly-httpservice-bundle-1.9.35.jar
+scan-bundle:file:../lib/pax-logging-api-1.6.2.jar
+scan-bundle:file:../lib/pax-logging-service-1.6.2.jar
+scan-dir:../lib
+

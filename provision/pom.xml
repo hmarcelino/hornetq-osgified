@@ -23,7 +23,17 @@
             <version>4.1.0</version>
         </dependency>
 
-        <!-- Spring dependencies -->
+        <dependency>
+            <groupId>org.aopalliance</groupId>
+            <artifactId>com.springsource.org.aopalliance</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.emory.mathcs.backport</groupId>
+            <artifactId>com.springsource.edu.emory.mathcs.backport</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
@@ -59,6 +69,33 @@
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.context.support</artifactId>
             <version>${spring.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.aop</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.asm</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.expression</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+
+        <!-- Osgi Http Service Implementation-->
+        <dependency>
+            <groupId>com.sun.grizzly.osgi</groupId>
+            <artifactId>grizzly-httpservice-bundle</artifactId>
+            <version>1.9.35</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>com.springsource.javax.servlet</artifactId>
+            <version>2.5.0</version>
         </dependency>
 
         <!-- Pax logging -->

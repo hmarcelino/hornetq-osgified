@@ -10,8 +10,8 @@
     <name>Messaging</name>
 
     <properties>
-        <org.osgi.service.http.port>8080</org.osgi.service.http.port>
-        <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+        <org.osgi.service.http.port>7000</org.osgi.service.http.port>
+        <org.osgi.service.http.port.secure>7443</org.osgi.service.http.port.secure>
         <log4j.configuration>file:../log4j.properties</log4j.configuration>
 
         <spring.dm.version>1.2.1</spring.dm.version>
@@ -24,10 +24,20 @@
         <module>poms</module>
         <module>provision</module>
         <module>hornetq</module>
+        <module>dist</module>
     </modules>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <pushChanges>false</pushChanges>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -79,16 +89,6 @@
             <url>http://bits.netbeans.org/maven2/</url>
         </repository>
         <repository>
-            <id>jboss-maven2</id>
-            <name>JBoss Maven2</name>
-            <url>http://repository.jboss.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>jboss-maven2-brew</id>
-            <name>JBoss Maven2 Brew</name>
-            <url>http://repository.jboss.org/maven2-brew/</url>
-        </repository>
-        <repository>
             <id>mave.central</id>
             <name>Maven Central Repository</name>
             <url>http://repo1.maven.org/maven2</url>
@@ -120,6 +120,25 @@
             <id>mave.central</id>
             <name>Maven Central Repository</name>
             <url>http://repo1.maven.org/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+        </pluginRepository>
+        <pluginRepository>
+            <id>org.netbeans</id>
+            <name>Netbeans repository</name>
+            <url>http://bits.netbeans.org/maven2/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>ops4j.releases</id>
+            <url>http://repository.ops4j.org/maven2/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>glassfish-repo-archive</id>
+            <url>http://download.java.net/maven/glassfish/</url>
         </pluginRepository>
     </pluginRepositories>
 
