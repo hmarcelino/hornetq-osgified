@@ -5,7 +5,7 @@
         <relativePath>../poms/compiled/</relativePath>
         <groupId>com.humanet.messaging.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <properties>
@@ -16,7 +16,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.humanet.messaging</groupId>
     <artifactId>hornetq</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>Messaging - HornetQ</name>
 
