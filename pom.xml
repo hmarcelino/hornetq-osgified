@@ -9,6 +9,10 @@
 
     <name>Messaging</name>
 
+    <scm>
+        <developerConnection>scm:git:https://github.com/hmarcelino/messaging</developerConnection>
+    </scm>
+
     <properties>
         <org.osgi.service.http.port>7000</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>7443</org.osgi.service.http.port.secure>
