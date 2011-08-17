@@ -1,12 +1,11 @@
 package com.humanet.messaging.hornetq.internal;
 
 import com.humanet.messaging.hornetq.DestinationType;
+import com.humanet.messaging.hornetq.internal.hornetq.HornetQManagerImpl;
 import org.apache.commons.logging.LogFactory;
 import org.hornetq.api.jms.management.JMSServerControl;
-import org.hornetq.jms.server.JMSServerManager;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,7 +26,7 @@ public class HornetQManagerTest {
     private JMSServerControl control;
 
     @Mock
-    JMSServerManager serverManager;
+    private ConnectionFactoryProvider connectionFactoryProvider;
 
     @BeforeClass
     protected void turnOf_logging() {
@@ -42,12 +41,7 @@ public class HornetQManagerTest {
     @BeforeMethod
     protected void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        messagingManager = new HornetQManagerImpl(control, serverManager);
-    }
-
-    @AfterMethod
-    public void tearDown() throws Exception {
-        messagingManager.shutdown();
+        messagingManager = new HornetQManagerImpl(control, connectionFactoryProvider);
     }
 
     @Test(expectedExceptions = {Exception.class})

@@ -1,36 +1,35 @@
 package com.humanet.messaging.hornetq;
 
 import com.humanet.messaging.hornetq.internal.MessagingManager;
-import org.springframework.context.ApplicationContext;
+import org.hornetq.jms.server.JMSServerManager;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.testng.annotations.AfterClass;
 
 import java.io.IOException;
 
 public class MessagingSpringContextTestHelper {
 
-    private String suffixSpringConfig;
+    private String conf;
 
-    private FileSystemXmlApplicationContext testApplicationContext;
+    private FileSystemXmlApplicationContext applicationContext;
     private MessagingService messagingService;
     private MessagingManager messagingManager;
+    private JMSServerManager serverManager;
 
-    public MessagingSpringContextTestHelper(String suffixSpringConfig) throws IOException {
-        this.suffixSpringConfig = suffixSpringConfig;
+    public MessagingSpringContextTestHelper(String conf) throws IOException {
+        this.conf = conf;
     }
 
     public void start() {
-        testApplicationContext = new FileSystemXmlApplicationContext(
+        applicationContext = new FileSystemXmlApplicationContext(
                 "file:src/main/resources/META-INF/spring/bundle-hornetq.xml",
                 "file:src/main/resources/META-INF/spring/bundle-context.xml",
-                "file:src/test/resources/META-INF/spring/bundle-context-test-" + suffixSpringConfig + ".xml"
+                "file:src/test/resources/META-INF/" + conf + "/bundle-context.xml"
         );
 
-        messagingService    = (MessagingService) testApplicationContext.getBean("messagingService");
-        messagingManager = (MessagingManager) testApplicationContext.getBean("hornetQManager");
-    }
-
-    public ApplicationContext getSpringApplicationContext() {
-        return testApplicationContext;
+        messagingService = (MessagingService) applicationContext.getBean("messagingService");
+        messagingManager = (MessagingManager) applicationContext.getBean("messagingManager");
+        serverManager = (JMSServerManager) applicationContext.getBean("serverManager");
     }
 
     public MessagingService getMessagingService() {
@@ -39,6 +38,14 @@ public class MessagingSpringContextTestHelper {
 
     public MessagingManager getMessagingManager() {
         return messagingManager;
+    }
+
+    public JMSServerManager getServerManager() {
+        return serverManager;
+    }
+
+    public void stop() {
+        applicationContext.destroy();
     }
 
 }

@@ -4,11 +4,11 @@ import com.humanet.messaging.hornetq.DestinationType;
 import com.humanet.messaging.hornetq.DummyMessageReceiver;
 import com.humanet.messaging.hornetq.MessageSender;
 import com.humanet.messaging.hornetq.MessagingTestCase;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 @Test
 public class HornetQManagerQueueIntegrationTest extends MessagingTestCase {
@@ -28,9 +28,7 @@ public class HornetQManagerQueueIntegrationTest extends MessagingTestCase {
 
     @Test(dependsOnMethods = {"createQueue"})
     public void check_queue_with_name() {
-        assertTrue(
-                mmanager.existsDestinationWithSameName(DestinationType.Queue, "queue")
-        );
+        assertTrue(mmanager.existsDestinationWithSameName(DestinationType.Queue, "queue"));
     }
 
     @Test
@@ -55,8 +53,4 @@ public class HornetQManagerQueueIntegrationTest extends MessagingTestCase {
         assertEquals("Ola messageReceiver", messageReceiver.getTextMessage());
     }
 
-    @AfterMethod
-    public void closeClientConnections() throws Exception {
-//        mmanager.shutdown();
-    }
 }

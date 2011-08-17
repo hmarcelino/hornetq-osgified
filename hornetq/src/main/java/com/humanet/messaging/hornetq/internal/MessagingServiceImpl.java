@@ -13,24 +13,25 @@ import javax.jms.JMSException;
  */
 public final class MessagingServiceImpl implements MessagingService {
 
-    private MessagingManager mmanager;
+    private String location;
+    private MessagingManager messagingManager;
 
-    public MessagingServiceImpl(MessagingManager manager) {
-        this.mmanager = manager;
+    public MessagingServiceImpl(MessagingManager manager, String location) {
+        this.messagingManager = manager;
+        this.location = location;
     }
 
     @Override
     public String getLocation() {
-        return mmanager.getServerLocation();
+        return location;
     }
-
 
     @Override
     public MessageSender createMessageSenderForTopic(String topicName) throws MessagingException {
 
         try {
             createIfNotAvailable(DestinationType.Topic, topicName);
-            return mmanager.createMessageSender(DestinationType.Topic, topicName);
+            return messagingManager.createMessageSender(DestinationType.Topic, topicName);
         } catch (JMSException e) {
             throw new MessagingException("messaging.error.error-creating-topic-publisher", e);
         }
@@ -42,7 +43,7 @@ public final class MessagingServiceImpl implements MessagingService {
 
         try {
             createIfNotAvailable(DestinationType.Queue, queueName);
-            return mmanager.createMessageSender(DestinationType.Queue, queueName);
+            return messagingManager.createMessageSender(DestinationType.Queue, queueName);
         } catch (JMSException e) {
             throw new MessagingException("messaging.error.error-creating-queue-publisher", e);
         }
@@ -55,7 +56,7 @@ public final class MessagingServiceImpl implements MessagingService {
 
         try {
             createIfNotAvailable(DestinationType.Topic, topicName);
-            mmanager.registerMessageReceiver(DestinationType.Topic, topicName, messageReceiver);
+            messagingManager.registerMessageReceiver(DestinationType.Topic, topicName, messageReceiver);
         } catch (JMSException e) {
             throw new MessagingException("messaging.error.error-creating-topic-subscriber", e);
         }
@@ -68,7 +69,7 @@ public final class MessagingServiceImpl implements MessagingService {
 
         try {
             createIfNotAvailable(DestinationType.Queue, queueName);
-            mmanager.registerMessageReceiver(DestinationType.Queue, queueName, messageReceiver);
+            messagingManager.registerMessageReceiver(DestinationType.Queue, queueName, messageReceiver);
         } catch (JMSException e) {
             throw new MessagingException("messaging.error.error-creating-queue-subscriber", e);
         }
@@ -78,7 +79,7 @@ public final class MessagingServiceImpl implements MessagingService {
     private void createIfNotAvailable(DestinationType type, String destinationName)
             throws MessagingException {
 
-        if (!mmanager.existsDestinationWithSameName(type, destinationName)) {
+        if (!messagingManager.existsDestinationWithSameName(type, destinationName)) {
             createDestination(type, destinationName);
         }
     }
@@ -89,7 +90,7 @@ public final class MessagingServiceImpl implements MessagingService {
         boolean success;
 
         try {
-            success = mmanager.createDestination(destinationType, destinationName);
+            success = messagingManager.createDestination(destinationType, destinationName);
         } catch (Exception e) {
             throw new MessagingException("messaging.error.cant-create-topic", e);
         }
@@ -103,5 +104,5 @@ public final class MessagingServiceImpl implements MessagingService {
         }
 
     }
-}//MessagingServiceImpl
+}
 

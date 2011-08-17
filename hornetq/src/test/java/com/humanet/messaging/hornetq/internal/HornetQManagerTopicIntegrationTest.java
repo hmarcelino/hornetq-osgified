@@ -20,7 +20,6 @@ public class HornetQManagerTopicIntegrationTest extends MessagingTestCase {
         messagingManager = serverContext.getMessagingManager();
     }
 
-
     @Test
     public void createTopic() throws Exception {
         messagingManager.createDestination(DestinationType.Topic, "createTopic-topic");
@@ -71,8 +70,4 @@ public class HornetQManagerTopicIntegrationTest extends MessagingTestCase {
         assertEquals("Ola messageReceiver", messageReceiver.getTextMessage());
     }
 
-    @AfterClass
-    public void closeClientConnections() throws Exception {
-//        messagingManager.shutdown();
-    }
 }

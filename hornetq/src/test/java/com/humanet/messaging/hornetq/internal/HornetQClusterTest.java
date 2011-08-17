@@ -2,6 +2,7 @@ package com.humanet.messaging.hornetq.internal;
 
 import com.humanet.messaging.hornetq.*;
 import com.humanet.messaging.hornetq.exceptions.MessagingException;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -16,23 +17,29 @@ public class HornetQClusterTest extends MessagingTestCase {
 
     public MessagingSpringContextTestHelper serverContext_2;
 
-    private MessageSender publisher;
+    private MessageSender<String> publisher;
     private DummyMessageReceiver server1Subscriber, server2Subscriber;
 
     @BeforeClass
     private void startServer_2() throws InterruptedException, MessagingException, IOException {
-        MessagingService messagingServiceServer1 = (MessagingService) serverContext.getSpringApplicationContext().getBean("messagingService");
+        MessagingService messagingServiceServer1 = serverContext.getMessagingService();
         server1Subscriber = new DummyMessageReceiver();
         messagingServiceServer1.registerMessageReceiverForTopic("clusteredTopic", server1Subscriber);
 
+        //noinspection unchecked
         publisher = messagingServiceServer1.createMessageSenderForTopic("clusteredTopic");
 
-        serverContext_2 = new MessagingSpringContextTestHelper("invm-2");
+        serverContext_2 = new MessagingSpringContextTestHelper("server2");
         serverContext_2.start();
 
-        MessagingService messagingServiceServer2 = (MessagingService) serverContext_2.getSpringApplicationContext().getBean("messagingService");
+        MessagingService messagingServiceServer2 = serverContext_2.getMessagingService();
         server2Subscriber = new DummyMessageReceiver();
         messagingServiceServer2.registerMessageReceiverForTopic("clusteredTopic", server2Subscriber);
+    }
+
+    @AfterClass
+    private void stopServer2(){
+        serverContext_2.stop();
     }
 
     @Test

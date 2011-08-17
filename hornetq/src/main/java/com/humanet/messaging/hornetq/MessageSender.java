@@ -4,8 +4,9 @@ import com.humanet.messaging.hornetq.exceptions.MessagingException;
 
 import java.io.Serializable;
 
-public interface MessageSender<T extends Serializable> extends MessageClient {
+public interface MessageSender<T extends Serializable> {
 
     public void send(T t) throws MessagingException;
 
-}//MessageSender
+    public void shutdown() throws MessagingException;
+}

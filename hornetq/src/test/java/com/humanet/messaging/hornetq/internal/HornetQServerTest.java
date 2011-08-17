@@ -1,11 +1,11 @@
 package com.humanet.messaging.hornetq.internal;
 
+import com.humanet.messaging.hornetq.MessagingSpringContextTestHelper;
 import com.humanet.messaging.hornetq.SilentTestCase;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hornetq.jms.server.JMSServerManager;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -19,24 +19,19 @@ public class HornetQServerTest extends SilentTestCase {
 
     @Test
     public void test_server_netty() throws Exception {
-        FileSystemXmlApplicationContext applicationContext = new FileSystemXmlApplicationContext(
-                "file:src/main/resources/META-INF/spring/bundle-hornetq.xml",
-                "file:src/test/resources/META-INF/spring/bundle-context-test-netty.xml"
-        );
+        MessagingSpringContextTestHelper applicationContext = new MessagingSpringContextTestHelper("netty");
+        applicationContext.start();
 
-        JMSServerManager server = (JMSServerManager) applicationContext.getBean("jmsServerManager");
-        assertTrue(server.isStarted());
-        assertThat(server, IsListeningOnPort(5445));
+        JMSServerManager serverManager = applicationContext.getServerManager();
+        assertTrue(serverManager.isStarted());
+        assertThat(serverManager, IsListeningOnPort(5445));
 
-        server.stop();
-        applicationContext.destroy();
-
+        applicationContext.stop();
         Thread.sleep(2000);
 
-        assertFalse(server.isStarted());
-
+        assertFalse(serverManager.isStarted());
         //Wait to make sure the server is stoped
-        assertThat(server, not(IsListeningOnPort(5445)));
+        assertThat(serverManager, not(IsListeningOnPort(5445)));
     }
 
     private Matcher<JMSServerManager> IsListeningOnPort(final int port) {
@@ -49,10 +44,7 @@ public class HornetQServerTest extends SilentTestCase {
             private boolean canWeConnectToPort(int port) {
                 Socket socket = null;
                 try {
-                    InetAddress addr = InetAddress.getByName(
-                            Inet4Address.getLocalHost().getHostAddress()
-                    );
-                    SocketAddress sockaddr = new InetSocketAddress(addr, port);
+                    SocketAddress sockaddr = new InetSocketAddress("127.0.0.1", port);
 
                     socket = new Socket();
                     socket.connect(sockaddr);
